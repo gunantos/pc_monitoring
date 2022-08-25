@@ -5,12 +5,12 @@ here = pathlib.Path(__file__).parent.resolve()
 long_description = (here / "README.md").read_text(encoding="utf-8")
 setup(
     name='pc_monitoring',
-    version='0.0.3',
+    version='0.0.4',
     description='Monitoring computer realtime with socket',
     long_description=long_description,
     author='gunantos',
     author_email='gunanto.simamora@gmail.com',
-    url='https://github.com/gunantos/socket-monitoring',
+    url='https://github.com/gunantos/pc_monitoring',
     license='MIT',
     keywords='monitoring, computer',
     python_requires=">=3.7, <4",
@@ -21,9 +21,9 @@ setup(
         'requests',
         'pyspectator'],
     project_urls={
-        "Bug Reports": "https://github.com/gunantos/socket-monitoring/issues",
+        "Bug Reports": "https://github.com/gunantos/pc_monitoring/issues",
         "Funding": "https://donate.pypi.org",
         "Say Thanks!": "http://saythanks.io/to/example",
-        "Source": "https: // github.com/gunantos/socket-monitoring",
+        "Source": "https: // github.com/gunantos/pc_monitoring",
     },
 )
