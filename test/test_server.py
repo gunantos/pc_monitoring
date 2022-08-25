@@ -1,4 +1,4 @@
-from src.socket_monitoring.monitoring import Monitoring
+from pc_monitoring.monitoring import Monitoring
 
 
 def main():

@@ -5,6 +5,7 @@ import time
 from urllib import request
 from pyspectator.computer import Computer
 from pyspectator.convert import UnitByte
+import signal
 
 
 class _Enum(set):
@@ -20,6 +21,12 @@ TYPEDATA = _Enum(['INFO', 'GENERAL_INFO', 'CPU', 'DISK', 'NETWORK'])
 class Monit():
     def __init__(self):
         self.computer = Computer()
+        signal.signal(signal.SIGINT, self.handler)
+
+    def handler(self):
+        res = input("Ctrl-c was pressed. Do you really want to exit? y/n ")
+        if res == 'y':
+            exit(1)
 
     def _format_bytes(self, byte_value):
         try:
@@ -166,7 +173,7 @@ class Monitoring(Monit):
             request.post(API_URL, data=self.info, headers=headers)
 
     async def run_async(self):
-        print("SOCKET START IN %:%".format(self.HOST, self.PORT))
+        print("SOCKET START IN {}:{}".format(self.HOST, self.PORT))
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.bind((self.HOST, self.PORT))
             s.listen()

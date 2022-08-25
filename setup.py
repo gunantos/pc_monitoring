@@ -8,6 +8,7 @@ setup(
     version='0.0.4',
     description='Monitoring computer realtime with socket',
     long_description=long_description,
+    long_description_content_type='text/markdown',
     author='gunantos',
     author_email='gunanto.simamora@gmail.com',
     url='https://github.com/gunantos/pc_monitoring',
