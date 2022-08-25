@@ -3,3 +3,34 @@
 
 Aplikasi monitoring ini mengunakan socket yang akan mengirim data informasi computer ke server
 
+
+### USING
+```python
+from socket_monitoring.monitoring import Monitoring
+CLS = Monitoring()
+#or set spesific HOST, PORT, INTERVAL
+# PORT default 65432
+# CLS = Monitoring('127.0.0.1', 65432, 1) 
+cls.run()
+#or if you using async 
+# await cls.run_async()
+```
+
+create socket client connection
+```python
+import json
+import socket
+
+HOST = '127.0.0.1'
+PORT = 65432
+
+def toJSON(data):
+    return bytes(json.dumps(data), encoding="utf-8")
+
+with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+    s.connect((HOST, PORT))
+    s.sendall(toJSON({"test": "Test"}))
+    data = s.recv(1024)
+
+print(data)
+```
