@@ -1,9 +1,23 @@
+import asyncio
+import json
+import socket
+import time
+from urllib import request
 from pyspectator.computer import Computer
 from pyspectator.convert import UnitByte
 
 
-class Property():
+class _Enum(set):
+    def __getattr__(self, name):
+        if name in self:
+            return name
+        raise AttributeError
 
+
+TYPEDATA = _Enum(['INFO', 'GENERAL_INFO', 'CPU', 'DISK', 'NETWORK'])
+
+
+class Monit():
     def __init__(self):
         self.computer = Computer()
 
@@ -51,7 +65,23 @@ class Property():
         self.computer.stop_monitoring()
 
 
-class Monitoring(Property):
+class Monitoring(Monit):
+    def __init__(self, HOST=None, PORT=None, INTERVAL=1):
+        super().__init__()
+        self.HOST = HOST
+        self.PORT = PORT
+        self.INTERVAL = INTERVAL
+
+    @property
+    def info(self):
+        return {
+            "os": self.computer.os,
+            "hostname": self.computer.hostname,
+            "architecture": self.computer.architecture,
+            "mac_address": self.nif.mac_address,
+            "ip_address": self.nif.ip_address,
+            "gateway": self.nif.gateway}
+
     @property
     def general_info(self):
         total_disk_mem = 0
@@ -111,3 +141,44 @@ class Monitoring(Property):
             'bytes_recv': self._format_bytes(self.nif.bytes_recv)
         }
         return info
+
+    def get(self, exclude=[]):
+        method_list = [method for method in dir(
+            self) if method.startswith('__') is False]
+        hasil = {}
+        for x in method_list:
+            x = x.lower()
+            if x not in exclude:
+                hasil[x] = self[x]
+        return hasil
+
+    def toJSON(self, data):
+        return bytes(json.dumps(data), encoding="utf-8")
+
+    def send_info(self, API_URL, headers={}):
+        if API_URL == None:
+            return
+        else:
+            request.post(API_URL, data=self.info, headers=headers)
+
+    async def run_async(self):
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            s.bind((self.HOST, self.PORT))
+            s.listen()
+            conn, addr = s.accept()
+            with conn:
+                while True:
+                    data = conn.recv(1024)
+                    print(data)
+                    if not data:
+                        break
+                    data = self.get(['info'])
+                    conn.sendall(self.toJSON({"monitoring": data}))
+                    time.sleep(self.INTERVAL)
+
+    def run(self):
+        loop = asyncio.get_event_loop()
+        asyncio.ensure_future(self.run_async(
+            self.HOST, self.PORT, self.INTERVAL))
+        loop.run_forever()
+        loop.close()
