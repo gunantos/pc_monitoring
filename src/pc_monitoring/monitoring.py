@@ -72,7 +72,7 @@ class Monitoring(Monit):
         self.PORT = PORT
         self.INTERVAL = INTERVAL
         if self.HOST == None:
-            self.HOST = '0.0.0.0'
+            self.HOST = socket.gethostname()
         if self.PORT == None:
             self.PORT = 65432
 
@@ -166,23 +166,26 @@ class Monitoring(Monit):
             request.post(API_URL, data=self.info, headers=headers)
 
     async def run_async(self):
+        print("SOCKET START IN %:%".format(self.HOST, self.PORT))
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.bind((self.HOST, self.PORT))
             s.listen()
             conn, addr = s.accept()
             with conn:
+                print("Connection from: " + str(addr))
                 while True:
                     data = conn.recv(1024)
                     print(data)
                     if not data:
                         break
+                    print("From connected user: " + str(data))
                     data = self.get(['info'])
                     conn.sendall(self.toJSON({"monitoring": data}))
                     time.sleep(self.INTERVAL)
 
     def run(self):
+        print("start")
         loop = asyncio.get_event_loop()
-        asyncio.ensure_future(self.run_async(
-            self.HOST, self.PORT, self.INTERVAL))
+        asyncio.ensure_future(self.run_async())
         loop.run_forever()
         loop.close()

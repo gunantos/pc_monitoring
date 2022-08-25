@@ -4,14 +4,15 @@
 Aplikasi monitoring ini mengunakan socket yang akan mengirim data informasi computer ke server
 
 ### Install
+this project is testing release
 ```cmd
-py -m pip install socket_monitoring
+pip install -i https://test.pypi.org/simple/ pc_monitoring
 ```
 
 ### Using
 - COMPUTER
 ```python
-from socket_monitoring.monitoring import Monitoring
+from pc_monitoring.monitoring import Monitoring
 CLS = Monitoring()
 #or set spesific HOST, PORT, INTERVAL
 # PORT default 65432

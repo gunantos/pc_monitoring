@@ -4,8 +4,8 @@
 requires = ["setuptools>=43.0.0", "wheel"]
 build-backend = "setuptools.build_meta"
 [project]
-name = "socket_monitoring"
-version = "0.0.1"
+name = "pc_monitoring"
+version = "0.0.3"
 authors = [
     {name = "gunantos", email = "gunanto.simamora@gmail.com"},
 ]
