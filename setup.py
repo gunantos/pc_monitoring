@@ -4,7 +4,7 @@ import pathlib
 here = pathlib.Path(__file__).parent.resolve()
 long_description = (here / "README.md").read_text(encoding="utf-8")
 setup(
-    name='Socket Monitoring',
+    name='socket_monitoring',
     version='1.0.0',
     description='Monitoring computer realtime with socket',
     long_description=long_description,

@@ -71,6 +71,10 @@ class Monitoring(Monit):
         self.HOST = HOST
         self.PORT = PORT
         self.INTERVAL = INTERVAL
+        if self.HOST == None:
+            self.HOST = '0.0.0.0'
+        if self.PORT == None:
+            self.PORT = 65432
 
     @property
     def info(self):

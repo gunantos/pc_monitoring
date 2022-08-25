@@ -1,0 +1,24 @@
+[build-system]
+# These are the assumed default build requirements from pip:
+# https://pip.pypa.io/en/stable/reference/pip/#pep-517-and-518-support
+requires = ["setuptools>=43.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+[project]
+name = "socket_monitoring"
+version = "0.0.1"
+authors = [
+    {name = "gunantos", email = "gunanto.simamora@gmail.com"},
+]
+description = "Monitoring computer realtime with socket"
+readme = "README.md"
+license = {file = "LICENSE"}
+requires-python = ">=3.7"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/gunantos/socket-monitoring"
+"Bug Tracker" = "https://github.com/gunantos/socket-monitoring/issues"
