@@ -3,8 +3,13 @@
 
 Aplikasi monitoring ini mengunakan socket yang akan mengirim data informasi computer ke server
 
+### Install
+```cmd
+py -m pip install socket_monitoring
+```
 
-### USING
+### Using
+- COMPUTER
 ```python
 from socket_monitoring.monitoring import Monitoring
 CLS = Monitoring()
@@ -16,6 +21,7 @@ cls.run()
 # await cls.run_async()
 ```
 
+- SERVER OR RECIVE DATA
 create socket client connection
 ```python
 import json
