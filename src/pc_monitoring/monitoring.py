@@ -1,11 +1,14 @@
+from ast import parse
 import asyncio
 import json
+import os
 import socket
 import time
 from urllib import request
 from pyspectator.computer import Computer
 from pyspectator.convert import UnitByte
 import signal
+from _thread import *
 
 
 class _Enum(set):
@@ -18,15 +21,9 @@ class _Enum(set):
 TYPEDATA = _Enum(['INFO', 'GENERAL_INFO', 'CPU', 'DISK', 'NETWORK'])
 
 
-class Monit():
+class __Monit():
     def __init__(self):
         self.computer = Computer()
-        signal.signal(signal.SIGINT, self.handler)
-
-    def handler(self):
-        res = input("Ctrl-c was pressed. Do you really want to exit? y/n ")
-        if res == 'y':
-            exit(1)
 
     def _format_bytes(self, byte_value):
         try:
@@ -65,24 +62,8 @@ class Monit():
     def current_user(self):
         return None
 
-    def start(self):
-        self.computer.start_monitoring()
 
-    def stop(self):
-        self.computer.stop_monitoring()
-
-
-class Monitoring(Monit):
-    def __init__(self, HOST=None, PORT=None, INTERVAL=1):
-        super().__init__()
-        self.HOST = HOST
-        self.PORT = PORT
-        self.INTERVAL = INTERVAL
-        if self.HOST == None:
-            self.HOST = socket.gethostname()
-        if self.PORT == None:
-            self.PORT = 65432
-
+class PC(__Monit):
     @property
     def info(self):
         return {
@@ -99,7 +80,6 @@ class Monitoring(Monit):
         for dev in self.disk_info:
             if isinstance(dev.total, (int, float)):
                 total_disk_mem += dev.total
-        # General information
         info = {
             'os': self.computer.os,
             'architecture': self.computer.architecture,
@@ -160,6 +140,7 @@ class Monitoring(Monit):
         for x in method_list:
             x = x.lower()
             if x not in exclude:
+                print(x)
                 hasil[x] = self[x]
         return hasil
 
@@ -172,27 +153,81 @@ class Monitoring(Monit):
         else:
             request.post(API_URL, data=self.info, headers=headers)
 
-    async def run_async(self):
-        print("SOCKET START IN {}:{}".format(self.HOST, self.PORT))
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            s.bind((self.HOST, self.PORT))
-            s.listen()
-            conn, addr = s.accept()
-            with conn:
-                print("Connection from: " + str(addr))
-                while True:
-                    data = conn.recv(1024)
-                    print(data)
-                    if not data:
-                        break
-                    print("From connected user: " + str(data))
-                    data = self.get(['info'])
-                    conn.sendall(self.toJSON({"monitoring": data}))
-                    time.sleep(self.INTERVAL)
 
-    def run(self):
-        print("start")
-        loop = asyncio.get_event_loop()
-        asyncio.ensure_future(self.run_async())
-        loop.run_forever()
-        loop.close()
+class MySocket():
+    def __init__(self, HOST=None, PORT=None, INTERVAL=1):
+        self.HOST = HOST
+        self.PORT = PORT
+        self.INTERVAL = INTERVAL * 60
+        if self.HOST == None:
+            self.HOST = ''
+        if self.PORT == None:
+            self.PORT = 65432
+
+    def setData(self, data):
+        self.DataSend = data
+
+    async def conn(self):
+        ServerSocket = socket.socket()
+        try:
+            ServerSocket.bind((self.HOST, self.PORT))
+        except socket.error as e:
+            print(str(e))
+        print(f'Server is listing on the port {self.PORT}')
+        ServerSocket.listen()
+        while True:
+            self.accept_connections(ServerSocket)
+
+    def accept_connections(self, ServerSocket):
+        Client, address = ServerSocket.accept()
+        print(f'Connected to: {address[0]}:{str(address[1])}')
+        start_new_thread(self.client_handler, (Client, ))
+
+    async def broadcast(self, connection):
+        try:
+            connection.sendall(str.encode(self.DataSend))
+        except:
+            print('Terjadi kesalahan dalam pengiriman data')
+
+    def getDataClient(self, connection):
+        data = connection.recv(2048).decode('utf-8')
+        parse_data = json.loads(data)
+        interval = parse_data.get('interval', 0)
+        stop = parse_data.get('stop', True)
+        if interval > 0:
+            self.INTERVAL = int(interval) * 60
+            self.RUN = stop
+
+    def client_handler(self, connection):
+        connection.send(str.encode(
+            'You are now connected to the replay server...'))
+        while self.RUN:
+            self.getDataClient(connection)
+            self.broadcast(connection)
+            time.sleep(self.INTERVAL)
+        connection.close()
+
+
+class Monitoring():
+    def __init__(self, HOST=None, PORT=None, INTERVAL=1):
+        self.HOST = HOST
+        self.PORT = PORT
+        self.INTERVAL = INTERVAL
+        if self.HOST == None:
+            self.HOST = ''
+        if self.PORT == None:
+            self.PORT = 65432
+
+    def start(self):
+        _pc = PC()
+        _sock = MySocket(self.HOST, self.PORT, self.INTERVAL)
+        _data = _pc.get()
+        _dataJSON = _pc.toJSON(_data)
+        _sock.setData(_dataJSON)
+        try:
+            loop = asyncio.get_event_loop()
+            asyncio.ensure_future(_sock.conn())
+            loop.run_forever()
+            loop.close()
+        except (KeyboardInterrupt, SystemExit):
+            os.exit(0)
