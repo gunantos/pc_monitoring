@@ -9,7 +9,7 @@ this project is testing release
 pip install -i https://test.pypi.org/simple/ pc_monitoring
 ```
 
-### Using
+### Using Library
 - COMPUTER
 ```python
 from pc_monitoring.monitoring import Monitoring
@@ -41,3 +41,9 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 
 print(data)
 ```
+
+### Install
+- Windows
+    download latest release and install
+    
+- Linux
