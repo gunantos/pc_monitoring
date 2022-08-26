@@ -186,7 +186,7 @@ class MySocket():
     async def broadcast(self, connection):
         try:
             connection.sendall(str.encode(self.DataSend))
-        except:
+        except connection:
             print('Terjadi kesalahan dalam pengiriman data')
 
     def getDataClient(self, connection):
