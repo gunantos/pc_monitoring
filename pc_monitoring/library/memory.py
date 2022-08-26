@@ -1,11 +1,11 @@
 from abc import ABCMeta, abstractmethod
 from datetime import timedelta, datetime
 import psutil
-from pc_monitoring.library.abcMonitoring import AbcMonitor
-from pc_monitoring.library.collection import LimitedTimeTable
+from library.abcMonitoring import AbcMonitoring
+from library.collection import LimitedTimeTable
 
 
-class AbsMemory(AbcMonitor, metaclass=ABCMeta):
+class AbsMemory(AbcMonitoring, metaclass=ABCMeta):
 
     def __init__(self, monitoring_latency, stats_interval=None):
         # Prepare to collect statistic

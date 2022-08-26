@@ -2,7 +2,7 @@ from abc import ABCMeta, abstractmethod
 from threading import Timer
 
 
-class AbcMonitor(metaclass=ABCMeta):
+class AbcMonitoring(metaclass=ABCMeta):
     """Base class for entities, which require repeating event.
 
     Attributes:
@@ -58,4 +58,4 @@ class AbcMonitor(metaclass=ABCMeta):
         raise NotImplementedError('Method not implemented by derived class!')
 
 
-__all__ = ['AbcMonitor']
+__all__ = ['AbcMonitoring']

@@ -3,9 +3,11 @@ import asyncio
 import json
 import os
 from urllib import request
-from pc_monitoring.library.pc import PC
-from pc_monitoring.library.convert import UnitByte
-from pc_monitoring.my_socket import MySocket
+from library.pc import PC
+from library.convert import UnitByte
+from my_socket import MySocket
+from type_data import TYPEDATA
+import types
 
 
 class __Monit():
@@ -50,16 +52,16 @@ class __Monit():
         return None
 
 
-class PC(__Monit):
+class Computer(__Monit):
     @property
     def info(self):
         return {
             "os": self.pc.os,
             "hostname": self.pc.hostname,
             "architecture": self.pc.architecture,
-            "mac_address": self.nif.mac_address,
+            "mac_address": self.nif.hardware_address,
             "ip_address": self.nif.ip_address,
-            "gateway": self.nif.gateway}
+            "gateway": self.nif.default_route}
 
     @property
     def general_info(self):
@@ -125,10 +127,10 @@ class PC(__Monit):
             self) if method.startswith('__') is False]
         hasil = {}
         for x in method_list:
-            x = x.lower()
-            if x not in exclude:
-                print(x)
-                hasil[x] = self[x]
+            cek = x.upper()
+            if cek in TYPEDATA:
+                if x not in exclude:
+                    hasil[x] = getattr(self, x)
         return hasil
 
     def toJSON(self, data):
@@ -152,7 +154,7 @@ class Monitoring():
             self.PORT = 65432
 
     def start(self):
-        _pc = PC()
+        _pc = Computer()
         _sock = MySocket(self.HOST, self.PORT, self.INTERVAL)
         _data = _pc.get()
         _dataJSON = _pc.toJSON(_data)

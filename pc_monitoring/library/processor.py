@@ -4,10 +4,10 @@ import subprocess
 import re
 from datetime import datetime, timedelta
 import psutil
-from pc_monitoring.library.abcMonitoring import AbcMonitor
-from pc_monitoring.library.collection import LimitedTimeTable
-from pc_monitoring.library.temperature_reader import LinuxCpuTemperatureReader
-from pc_monitoring.library.temperature_reader import WindowsCpuTemperatureReader
+from library.abcMonitoring import AbcMonitoring
+from library.collection import LimitedTimeTable
+from library.temperature_reader import LinuxCpuTemperatureReader
+from library.temperature_reader import WindowsCpuTemperatureReader
 import sys
 
 if sys.version_info[:2] >= (3, 8):
@@ -16,7 +16,7 @@ else:
     from collections import Callable
 
 
-class Cpu(AbcMonitor):
+class Cpu(AbcMonitoring):
     """Monitoring system of the Central Processing Unit.
 
         :param monitoring_latency: time interval (in seconds) between calls of
@@ -139,7 +139,8 @@ class Cpu(AbcMonitor):
             try:
                 self.__temperature = self.__temperature_reader()
                 self.__temperature_stats[now] = self.__temperature
-            except:
+            except Exception:
+                print(str(Exception))
                 print('Can\'t read CPU temperature')
 
     @classmethod

@@ -1,13 +1,14 @@
 import platform
 from datetime import datetime
 import psutil
-from pc_monitoring.library.abcMonitoring import AbcMonitor
-from pc_monitoring.library.memory import NonvolatileMemory, VirtualMemory, SwapMemory
-from pc_monitoring.library.processor import Cpu
-from pc_monitoring.library.network import NetworkInterface
+from library.memory import NonvolatileMemory, VirtualMemory, SwapMemory
+from library.processor import Cpu
+from library.network import NetworkInterface
+
+from library.abcMonitoring import AbcMonitoring
 
 
-class PC(AbcMonitor):
+class PC(AbcMonitoring):
 
     def __init__(self):
         self.datetime_format = '%d-%m-%Y %H:%M:%S'

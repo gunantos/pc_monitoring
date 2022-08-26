@@ -2,11 +2,11 @@ import socket
 from datetime import timedelta, datetime
 import psutil
 import netifaces as nif
-from pc_monitoring.library.abcMonitoring import AbcMonitor
-from pc_monitoring.library.collection import LimitedTimeTable
+from library.abcMonitoring import AbcMonitoring
+from library.collection import LimitedTimeTable
 
 
-class NetworkInterface(AbcMonitor):
+class NetworkInterface(AbcMonitoring):
 
     def __init__(self, monitoring_latency, stats_interval=None,
                  ip_address=None):

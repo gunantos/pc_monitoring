@@ -1,3 +1,4 @@
+import json
 import socket
 import time
 from _thread import *
@@ -7,7 +8,7 @@ class MySocket():
     def __init__(self, HOST=None, PORT=None, INTERVAL=1):
         self.HOST = HOST
         self.PORT = PORT
-        self.INTERVAL = INTERVAL * 60
+        self.INTERVAL = INTERVAL
         if self.HOST == None:
             self.HOST = ''
         if self.PORT == None:
@@ -44,7 +45,7 @@ class MySocket():
         interval = parse_data.get('interval', 0)
         stop = parse_data.get('stop', True)
         if interval > 0:
-            self.INTERVAL = int(interval) * 60
+            self.INTERVAL = int(interval)
             self.RUN = stop
 
     def client_handler(self, connection):
