@@ -2,8 +2,12 @@ from monitoring import Monitoring
 
 
 def main():
-    cls = Monitoring()
-    cls.start()
+    try:
+        cls = Monitoring()
+        cls.start()
+    except KeyboardInterrupt:
+        print('exit')
+        exit()
 
 
 if __name__ == '__main__':

@@ -1,13 +1,16 @@
 from ast import parse
 import asyncio
-import json
 import os
+import sys
 from urllib import request
 from library.pc import PC
 from library.convert import UnitByte
-from my_socket import MySocket
 from type_data import TYPEDATA
 import types
+import json
+import socket
+import time
+from _thread import *
 
 
 class __Monit():
@@ -122,7 +125,7 @@ class Computer(__Monit):
         }
         return info
 
-    def get(self, exclude=[]):
+    async def get(self, exclude=[]):
         method_list = [method for method in dir(
             self) if method.startswith('__') is False]
         hasil = {}
@@ -143,6 +146,76 @@ class Computer(__Monit):
             request.post(API_URL, data=self.info, headers=headers)
 
 
+class MySocket():
+    def __init__(self, HOST=None, PORT=None, INTERVAL=1):
+        self.HOST = HOST
+        self.PORT = PORT
+        self.INTERVAL = INTERVAL
+        self.RUN = False
+        if self.HOST == None:
+            self.HOST = ''
+        if self.PORT == None:
+            self.PORT = 65432
+
+    def setData(self, data):
+        self.DataSend = data
+
+    async def conn(self):
+        ServerSocket = socket.socket()
+        self.RUN = True
+        try:
+            ServerSocket.bind((self.HOST, self.PORT))
+        except socket.error as e:
+            print(str(e))
+        print(f'Server is listing on the port {self.PORT}')
+        ServerSocket.listen()
+        while self.RUN:
+            self.accept_connections(ServerSocket)
+        self.RUN = False
+        ServerSocket.close()
+
+    def accept_connections(self, ServerSocket):
+        Client, address = ServerSocket.accept()
+        print(f'Connected to: {address[0]}:{str(address[1])}')
+        start_new_thread(self.client_handler, (Client, ))
+
+    def broadcast(self, connection):
+        try:
+            connection.sendall(str.encode(self.DataSend))
+        except connection:
+            print('Terjadi kesalahan dalam pengiriman data')
+
+    def getDataClient(self, connection):
+        data = connection.recv(2048).decode('utf-8')
+        try:
+            parse_data = json.loads(data)
+            interval = parse_data.get('interval', 0)
+            stop = parse_data.get('stop', True)
+            if interval > 0:
+                self.INTERVAL = int(interval)
+                self.RUN = stop
+        except json.JSONDecodeError as e:
+            print(e)
+
+    async def sendAllInfo(self, connection):
+        _pc = Computer()
+        _data = await _pc.get()
+        _dataJSON = _pc.toJSON(_data)
+        connection.sendall(_dataJSON)
+
+    def client_handler(self, connection):
+        connection.send(str.encode(
+            'You are now connected to the replay server...'))
+        while self.RUN:
+            self.getDataClient(connection)
+            proc = asyncio.new_event_loop()
+            asyncio.set_event_loop(proc)
+            proc.run_until_complete(self.sendAllInfo(connection))
+            proc.close()
+            time.sleep(self.INTERVAL)
+        connection.close()
+
+
 class Monitoring():
     def __init__(self, HOST=None, PORT=None, INTERVAL=1):
         self.HOST = HOST
@@ -154,18 +227,15 @@ class Monitoring():
             self.PORT = 65432
 
     def start(self):
-        _pc = Computer()
         _sock = MySocket(self.HOST, self.PORT, self.INTERVAL)
-        _data = _pc.get()
-        _dataJSON = _pc.toJSON(_data)
-        _sock.setData(_dataJSON)
         try:
             loop = asyncio.get_event_loop()
             asyncio.ensure_future(_sock.conn())
             loop.run_forever()
             loop.close()
         except (KeyboardInterrupt, SystemExit):
-            os.exit(0)
+            sys.exit()
+            exit()
 
 
 __all__ = ['Monitoring']
