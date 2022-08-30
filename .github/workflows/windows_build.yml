@@ -1,0 +1,21 @@
+name: PC Monitoring
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Package Application
+        uses: JackMcKew/pyinstaller-action-windows@main
+        with:
+          path: pc_monitoring
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: pc_monitoring
+          path: pc_monitoring/dist/window
