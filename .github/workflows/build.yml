@@ -37,13 +37,13 @@ jobs:
         include:
           - os: ubuntu-latest
             TARGET: armv7-unknown-linux-musleabihf
-            CMD_BUILD: pyinstaller -F -c -n pc_monitoring -i resources/icon.ico cli.py
+            CMD_BUILD: pyinstaller -F -c -n pc_monitoring -i resources/icon.ico pc_monitoring/client.py
             OUT_FILE_NAME: pc_monitoring.tar.gz
             ASSET_MINE: application/x-gzip
             REQUIRED_FILE: requirements/linux.txt
           - os: windows-latest
             TARGET: windows
-            CMD_BUILD: pyinstaller -F -c -n pc_monitoring -i resources/icon.ico cli.py
+            CMD_BUILD: pyinstaller -F -c -n pc_monitoring -i resources/icon.ico pc_monitoring/client.py
             OUT_FILE_NAME: pc_monitoring.exe
             ASSET_MIME: application/vnd.microsoft.portable-executable
             REQUIRED_FILE: requirements/windows.txt
