@@ -39,7 +39,7 @@ jobs:
             TARGET: armv7-unknown-linux-musleabihf
             CMD_BUILD: pyinstaller -F -c -n pc_monitoring -i resources/icon.ico pc_monitoring/client.py
             OUT_FILE_NAME: pc_monitoring.tar.gz
-            ASSET_MINE: application/x-gzip
+            ASSET_MIME: application/x-gzip
             REQUIRED_FILE: requirements/linux.txt
           - os: windows-latest
             TARGET: windows
