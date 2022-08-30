@@ -53,12 +53,12 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: 3.8
+      - name: upgrade pip
+        run: python -m pip install --upgrade pip
       - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install pyinstaller
-          pip uninstall enum34
-          pip install -r ${{ matrix.REQUIRED_FILE }}
+        run: pip install -r ${{ matrix.REQUIRED_FILE }}
+      - name: uninstal enum34
+        run: pip uninstall enum34
       - name: Build with pyinstaller for ${{matrix.TARGET}}
         run: ${{matrix.CMD_BUILD}}
       - name: Load Release URL File from release job
